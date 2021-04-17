@@ -27,6 +27,7 @@ class OurTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
           side: BorderSide(width: 2.0, color: Colors.black26),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(32.0),

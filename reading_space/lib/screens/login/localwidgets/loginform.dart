@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:reading_space/screens/home/home.dart';
+//import 'package:reading_space/screens/home/home.dart';
+import 'package:reading_space/screens/root/root.dart';
 import 'package:reading_space/screens/signup/signup.dart';
 import 'package:reading_space/states/currentUser.dart';
 import 'package:reading_space/widgets/OurContainer.dart';
+
+enum LoginType {
+  email,
+  google,
+}
 
 class OurLoginForm extends StatefulWidget {
   @override
@@ -13,19 +19,36 @@ class OurLoginForm extends StatefulWidget {
 class _OurLoginFormState extends State<OurLoginForm> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  void loginUser(String email, String password, BuildContext context) async {
+  void loginUser({
+    @required LoginType type,
+    String email,
+    String password,
+    BuildContext context,
+  }) async {
     CurrentUser currentUser = Provider.of<CurrentUser>(context, listen: false);
     try {
-      if (await currentUser.loginUser(email, password)) {
-        Navigator.of(context).push(
+      String returnString;
+      switch (type) {
+        case LoginType.email:
+          returnString = await currentUser.loginUserwithEmail(email, password);
+          break;
+        case LoginType.google:
+          returnString = await currentUser.loginUserwithGoogle();
+          break;
+      }
+
+      if (returnString == "Success") {
+        Navigator.pushAndRemoveUntil(
+          context,
           MaterialPageRoute(
-            builder: (context) => HomeScreen(),
+            builder: (context) => OurRoot(),
           ),
+          (route) => false,
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Incorrect Login Info!'),
+            content: Text(returnString),
             duration: Duration(seconds: 2),
           ),
         );
@@ -33,6 +56,37 @@ class _OurLoginFormState extends State<OurLoginForm> {
     } catch (e) {
       print(e);
     }
+  }
+
+  Widget googleButton() {
+    return OutlinedButton(
+      style: ButtonStyle(
+        shape: MaterialStateProperty.all<OutlinedBorder>(StadiumBorder()),
+        side: MaterialStateProperty.resolveWith<BorderSide>(
+            (Set<MaterialState> states) {
+          final Color color = states.contains(MaterialState.pressed)
+              ? Colors.blue.shade400
+              : Colors.grey;
+          return BorderSide(color: color, width: 2);
+        }),
+      ),
+      //icon: Image.asset("assets/google_logo.png")
+      onPressed: () {
+        loginUser(type: LoginType.google, context: context);
+      },
+      child: new Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          new Image.asset('assets/google_logo1.png', height: 20.0, width: 20.0),
+          Padding(
+              padding: EdgeInsets.only(left: 10.0),
+              child: new Text(
+                "Sign In With Google",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
+              ))
+        ],
+      ),
+    );
   }
 
   @override
@@ -80,7 +134,11 @@ class _OurLoginFormState extends State<OurLoginForm> {
               ),
             ),
             onPressed: () {
-              loginUser(emailController.text, passwordController.text, context);
+              loginUser(
+                  type: LoginType.email,
+                  email: emailController.text,
+                  password: passwordController.text,
+                  context: context);
             },
           ),
           TextButton(
@@ -93,7 +151,8 @@ class _OurLoginFormState extends State<OurLoginForm> {
                 ),
               );
             },
-          )
+          ),
+          googleButton()
         ],
       ),
     );

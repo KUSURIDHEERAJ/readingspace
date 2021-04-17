@@ -13,11 +13,21 @@ class _OurSignUpFormState extends State<OurSignUpForm> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
-  void signUpUser(String email, String password, BuildContext context) async {
+  void signUpUser(String email, String password, BuildContext context,
+      String fullName) async {
     CurrentUser currentUser = Provider.of<CurrentUser>(context, listen: false);
     try {
-      if (await currentUser.signUpUser(email, password)) {
+      String returnString =
+          await currentUser.signUpUser(email, password, fullName);
+      if (returnString == "Success") {
         Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(returnString),
+            duration: Duration(seconds: 2),
+          ),
+        );
       }
     } catch (e) {
       print(e);
@@ -88,8 +98,8 @@ class _OurSignUpFormState extends State<OurSignUpForm> {
             ),
             onPressed: () {
               if (passwordController.text == confirmPasswordController.text) {
-                signUpUser(
-                    emailController.text, passwordController.text, context);
+                signUpUser(emailController.text, passwordController.text,
+                    context, fullNameController.text);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
