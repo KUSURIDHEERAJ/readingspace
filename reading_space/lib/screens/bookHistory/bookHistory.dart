@@ -24,6 +24,37 @@ class _BookHistoryState extends State<BookHistory> {
     return Scaffold(
       body: FutureBuilder(
         future: books,
+        builder: (BuildContext context, AsyncSnapshot<List<OurBook>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return ListView.builder(
+              itemCount: snapshot.data.length + 1,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == 0) {
+                  return Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Row(
+                      children: [
+                        BackButton(),
+                      ],
+                    ),
+                  );
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                    // child: (
+                    // books: snapshot.data()[index - 1],
+                    //   groupId: widget.groupId,
+                    // ),
+                  );
+                }
+              },
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
       ),
     );
   }

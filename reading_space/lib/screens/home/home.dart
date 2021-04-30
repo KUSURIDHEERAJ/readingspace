@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:reading_space/screens/addBook/addBook.dart';
+import 'package:reading_space/screens/bookHistory/history.dart';
 import 'package:reading_space/screens/noGroup/noGroup.dart';
 import 'package:reading_space/screens/review/review.dart';
 import 'package:reading_space/screens/root/root.dart';
@@ -71,6 +72,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void goToHistory(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OurHistory(),
+      ),
+    );
+  }
+
   void signOut(BuildContext context) async {
     CurrentUser currentUser = Provider.of<CurrentUser>(context, listen: false);
     String returnString = await currentUser.signOut();
@@ -101,10 +111,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Column(
                     children: <Widget>[
                       Text(
-                        value.getCurrentBook.name ?? "loading ...",
+                        "Title: " + value.getCurrentBook.name ?? "loading ...",
                         style: TextStyle(
-                          fontSize: 40,
+                          fontSize: 35,
                           color: Colors.indigo,
+                        ),
+                      ),
+                      Text(
+                        "Author: " + value.getCurrentBook.author ??
+                            "Unknown...",
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black87,
                         ),
                       ),
                       Padding(
@@ -165,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     Text(
-                      timeUntil[1] ?? "loading...",
+                      timeUntil[1] ?? "21 Days",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -208,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 shape: StadiumBorder(),
                 side: BorderSide(color: Colors.blue, width: 2),
               ),
-              onPressed: () => goToAddBook(context),
+              onPressed: () => goToHistory(context),
             ),
           ),
           Padding(

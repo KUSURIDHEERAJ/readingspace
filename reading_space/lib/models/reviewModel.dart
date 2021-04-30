@@ -11,7 +11,7 @@ class ReviewModel {
   });
   ReviewModel.fromDocumentSnapshot({DocumentSnapshot documentSnapshot}) {
     userId = documentSnapshot.id;
-    //rating = documentSnapshot.data["rating"];
-    //review = documentSnapshot.data["review"];
+    rating = documentSnapshot.data()["rating"];
+    review = documentSnapshot.data()["review"];
   }
 }
